@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para mi niña hermosa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            background: radial-gradient(circle at top right, #2b193d, #0b0914, #05040a);
+            color: white;
+            font-family: 'Lora', serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .font-cursive {
+            font-family: 'Dancing Script', cursive;
+        }
+
+        /* --- Cielo y Estrellas --- */
+        .moon {
+            position: absolute;
+            top: 8%;
+            right: 15%;
+            width: 70px;
+            height: 70px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 30px #fff, 0 0 80px rgba(255, 255, 255, 0.6), inset -10px -10px 20px rgba(0,0,0,0.1);
+            z-index: 0;
+        }
+        
+        .stars-container {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 5px #fff; }
+        }
+
+        /* --- Escena de Siluetas Articuladas --- */
+        #scene {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            height: 180px;
+            margin-top: 15vh;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 20px -20px rgba(255, 255, 255, 0.2);
+        }
+
+        .person-wrapper { position: absolute; bottom: 0; width: 20px; height: 120px; }
+        #boy-wrapper { left: 5%; animation: walkForward 2.5s linear forwards; z-index: 2;}
+        #girl-wrapper { right: 25%; z-index: 1;}
+
+        .person { width: 100%; height: 100%; filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5)); position: relative; }
+        
+        /* Partes del Cuerpo Base */
+        .torso { width: 9px; height: 38px; background: white; border-radius: 5px; position: absolute; bottom: 65px; left: 5px; transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 2;}
+        .head { width: 22px; height: 22px; background: white; border-radius: 50%; position: absolute; left: -6px; top: -26px; transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 3;}
+        .limb { width: 8px; background: white; border-radius: 4px; position: absolute; transform-origin: 50% 4px; transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        .thigh { height: 35px; top: 32px; left: 0px; }
+        .calf { height: 36px; top: 30px; left: 0; }
+        .upper-arm { height: 26px; top: 4px; left: 0px; }
+        .forearm { height: 26px; top: 22px; left: 0; }
+
+        /* Específico del Chico */
+        .b-leg-l { z-index: 1; filter: brightness(0.7); } /* Pierna trasera más oscura por profundidad */
+        .b-leg-r { z-index: 3; } /* Pierna delantera */
+        .b-arm-r { z-index: 4; }
+        
+        /* Específico de la Chica */
+        .dress { position: absolute; top: 2px; left: -9px; width: 27px; height: 42px; background: white; clip-path: polygon(30% 0, 70% 0, 100% 100%, 0 100%); border-radius: 4px; z-index: 2; transition: all 1s ease;}
+        .g-leg-l { z-index: 1; filter: brightness(0.7); }
+        .g-leg-r { z-index: 1; }
+        .g-arm-l { z-index: 4; left: -2px; }
+
+        /* Ramo de Flores */
+        #bouquet { 
+            position: absolute; bottom: -15px; left: -10px; font-size: 26px; opacity: 0; 
+            transform: scale(0.5) rotate(-90deg); transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1); 
+            z-index: 5; pointer-events: none; filter: drop-shadow(0 0 5px rgba(255,100,150,0.5)); 
+        }
+
+        /* Animación de Caminar */
+        @keyframes walkForward { 0% { transform: translateX(-120px); } 100% { transform: translateX(0); } }
+        @keyframes thighSwing { 0%, 100% { transform: rotate(-25deg); } 50% { transform: rotate(30deg); } }
+        @keyframes thighSwingRev { 0%, 100% { transform: rotate(30deg); } 50% { transform: rotate(-25deg); } }
+        @keyframes calfBend { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(35deg); } 50% { transform: rotate(0deg); } }
+        @keyframes calfBendRev { 0%, 100% { transform: rotate(0deg); } 75% { transform: rotate(35deg); } }
+        @keyframes armSwing { 0%, 100% { transform: rotate(20deg); } 50% { transform: rotate(-20deg); } }
+
+        .swinging .b-leg-l { animation: thighSwing 1s infinite; }
+        .swinging .b-leg-l .calf { animation: calfBend 1s infinite; }
+        .swinging .b-leg-r { animation: thighSwingRev 1s infinite; }
+        .swinging .b-leg-r .calf { animation: calfBendRev 1s infinite; }
+        .swinging .b-arm-r { animation: armSwing 1s infinite; }
+
+        /* Postura Entregando Flores (De pie) */
+        .giving-flowers .torso { transform: translateX(15px); } /* Se acerca un poco más de pie */
+        .giving-flowers .head { transform: rotate(-5deg); } /* La mira tiernamente de frente */
+        .giving-flowers .b-arm-r { transform: rotate(-70deg); } /* Levanta el brazo para dar el ramo */
+        .giving-flowers .b-arm-r .forearm { transform: rotate(-10deg); }
+        .giving-flowers #bouquet { opacity: 1; transform: scale(1.4) rotate(45deg) translate(-5px, -15px); }
+
+        /* Reacción de Sorpresa de la Chica */
+        .surprised .g-arm-l { transform: rotate(155deg); } /* Levanta el brazo */
+        .surprised .g-arm-l .forearm { transform: rotate(45deg); } /* Manos cubriendo la boca */
+        .surprised .head { transform: rotate(12deg) translate(-2px, 2px); } /* Inclina la cabeza por ternura */
+
+        /* --- Corazones Flotantes --- */
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            pointer-events: none;
+            z-index: 20;
+            opacity: 0;
+        }
+        @keyframes floatHeart {
+            0% { transform: translateY(0) scale(0.5); opacity: 1; }
+            100% { transform: translateY(-150px) scale(1.5); opacity: 0; }
+        }
+
+        /* --- UI & Carta --- */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            border-radius: 20px;
+        }
+
+        .pulse-btn {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.6); }
+            70% { box-shadow: 0 0 0 15px rgba(225, 29, 72, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); }
+        }
+
+        /* Scrollbar carta */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <!-- Fondo Mágico -->
+    <div class="moon"></div>
+    <div class="stars-container" id="stars"></div>
+
+    <!-- Escena Animada -->
+    <div id="scene">
+        <!-- Chico -->
+        <div id="boy-wrapper" class="person-wrapper">
+            <div id="boy" class="person swinging">
+                <div class="torso">
+                    <div class="head"></div>
+                    <div class="limb upper-arm b-arm-r">
+                        <div class="limb forearm">
+                            <div id="bouquet">💐</div>
+                        </div>
+                    </div>
+                    <div class="limb thigh b-leg-l">
+                        <div class="limb calf"></div>
+                    </div>
+                    <div class="limb thigh b-leg-r">
+                        <div class="limb calf"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Chica -->
+        <div id="girl-wrapper" class="person-wrapper">
+            <div id="girl" class="person">
+                <div class="torso">
+                    <div class="head"></div>
+                    <div class="dress"></div>
+                    <div class="limb upper-arm g-arm-l">
+                        <div class="limb forearm"></div>
+                    </div>
+                    <div class="limb thigh g-leg-l">
+                        <div class="limb calf"></div>
+                    </div>
+                    <div class="limb thigh g-leg-r">
+                        <div class="limb calf"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón de Acción -->
+    <div id="action-container" class="mt-12 z-20 transition-all duration-700">
+        <button id="actionBtn" class="pulse-btn bg-rose-600 hover:bg-rose-500 text-white font-cursive text-2xl md:text-3xl px-8 py-3 rounded-full transition-colors duration-300 shadow-xl cursor-pointer tracking-wider">
+            Tócame, mi amor
+        </button>
+    </div>
+
+    <!-- Carta (Oculta al inicio) -->
+    <div id="letter-container" class="w-full max-w-2xl p-4 mt-4 z-20 opacity-0 translate-y-10 pointer-events-none transition-all duration-[1500ms] ease-out flex-1 flex flex-col pb-10">
+        <div class="glass-card flex-1 overflow-y-auto custom-scrollbar p-6 md:p-10 text-gray-100 flex flex-col space-y-5">
+            
+            <h1 class="font-cursive text-3xl md:text-4xl lg:text-5xl text-rose-300 font-bold mb-2 text-center drop-shadow-md">
+                Mi hermosa Lizet,
+            </h1>
+            
+            <h2 class="font-cursive text-2xl md:text-3xl text-rose-200 text-center mb-4">
+                Feliz primer mes de este nuevo comienzo. ❤️
+            </h2>
+            
+            <div class="space-y-4 text-base md:text-lg leading-relaxed font-light text-gray-200 text-justify">
+                <p>
+                    No tengo las palabras suficientes para agradecerte por seguir a mi lado. Sé que muchas veces soy un tonto, que me comporto como un niño y que a veces siento que soy una completa 'mierda de persona' por mis errores. Sé que me pongo muy paranoico a veces y te pido perdón por eso, pero quiero que sepas que reconozco mis fallas y que cada día intento ser mejor, porque tú lo vales todo.
+                </p>
+                
+                <p>
+                    Me encanta pasar tiempo a tu lado, cada instante contigo se vuelve mi parte favorita del día. A pesar de mis tonterías, me preocupo profundamente por ti. Tu bienestar y tu sonrisa son mi prioridad y tengo un miedo inmenso a perderte, porque te has convertido en lo más indispensable de mi vida.
+                </p>
+                
+                <p>
+                    Te amo demasiado. Gracias por no rendirte conmigo, por esta nueva oportunidad y por dejarme demostrarte cuánto me importas. Prometo cuidarte y hacer que todo esto valga la pena.
+                </p>
+            </div>
+
+            <div class="mt-6 pt-6 border-t border-rose-300/20 text-center">
+                <p class="font-cursive text-3xl md:text-4xl text-rose-300">
+                    Siempre tuyo.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. Generar estrellas
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 100; i++) {
+            let star = document.createElement('div');
+            star.className = 'star';
+            star.style.width = Math.random() * 3 + 'px';
+            star.style.height = star.style.width;
+            star.style.left = Math.random() * 100 + 'vw';
+            star.style.top = Math.random() * 100 + 'vh';
+            star.style.animationDelay = Math.random() * 5 + 's';
+            star.style.animationDuration = 2 + Math.random() * 3 + 's';
+            starsContainer.appendChild(star);
+        }
+
+        // 2. Controlar la animación inicial (detener el caminado)
+        const boy = document.getElementById('boy');
+        const girl = document.getElementById('girl');
+        const btn = document.getElementById('actionBtn');
+        const actionContainer = document.getElementById('action-container');
+        const letterContainer = document.getElementById('letter-container');
+        const scene = document.getElementById('scene');
+
+        setTimeout(() => {
+            // El chico deja de balancear las piernas al llegar frente a ella
+            boy.classList.remove('swinging');
+        }, 2500);
+
+        // 3. Evento al tocar el botón
+        btn.addEventListener('click', () => {
+            // Reproducir música (asegúrate de que 1.mp3 esté en la misma carpeta)
+            let audio = new Audio('1.mp3');
+            audio.volume = 0.7;
+            let playPromise = audio.play();
+            
+            // Manejar correctamente el posible error si el archivo 1.mp3 no se encuentra
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log("Nota: El archivo de audio '1.mp3' no se encontró o no se pudo reproducir en este entorno.", error);
+                });
+            }
+
+            // Cambiar postura del chico a entregar flores de pie
+            boy.classList.add('giving-flowers');
+
+            // Reacción de sorpresa y ternura de la chica tras una fracción de segundo
+            setTimeout(() => {
+                girl.classList.add('surprised');
+            }, 600);
+
+            // Ocultar botón suavemente
+            actionContainer.classList.add('opacity-0', 'scale-90', 'pointer-events-none');
+            setTimeout(() => {
+                actionContainer.style.display = 'none';
+            }, 700);
+
+            // Mostrar corazones flotando
+            let heartCount = 0;
+            let heartInterval = setInterval(() => {
+                spawnHeart();
+                heartCount++;
+                if(heartCount > 25) clearInterval(heartInterval); // Detener después de ~2.5 segundos
+            }, 100);
+
+            // Mostrar la carta suavemente
+            setTimeout(() => {
+                letterContainer.classList.remove('opacity-0', 'translate-y-10', 'pointer-events-none');
+                letterContainer.classList.add('opacity-100', 'translate-y-0');
+            }, 800);
+        });
+
+        // Función para crear un corazón animado
+        function spawnHeart() {
+            const heart = document.createElement('div');
+            heart.innerHTML = '❤️';
+            heart.className = 'heart';
+            
+            // Posicionar cerca del centro de la escena
+            const sceneRect = scene.getBoundingClientRect();
+            const startX = sceneRect.left + (sceneRect.width / 2) + (Math.random() * 60 - 30);
+            const startY = sceneRect.top + (sceneRect.height / 2);
+            
+            heart.style.left = startX + 'px';
+            heart.style.top = startY + 'px';
+            heart.style.animation = `floatHeart ${2 + Math.random()}s ease-in forwards`;
+            
+            document.body.appendChild(heart);
+
+            // Limpiar elemento del DOM al terminar animación
+            setTimeout(() => heart.remove(), 3000);
+        }
+    </script>
+</body>
+</html>
